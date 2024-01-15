@@ -106,7 +106,7 @@ func (s *MemoryStorage) RunStorage(ctx context.Context) {
 }
 
 func (s *MemoryStorage) Ping(ctx context.Context) error {
-	return nil
+	return errors.New("memory storage used")
 }
 
 func (s *MemoryStorage) startIntervalSaving(ctx context.Context) {
