@@ -1,10 +1,7 @@
 package server
 
 import (
-	"fmt"
-	"io"
 	"net/http"
-	"strings"
 
 	"github.com/bazookajoe1/metrics-collector/internal/pcstats"
 	"github.com/labstack/echo/v4"
@@ -70,11 +67,6 @@ func (s *HTTPServer) SendAllMetricsHTML(c echo.Context) error {
 // ReceiveMetricFromBodyJSON is the handler responsible for receiving metrics in JSON format from body.
 func (s *HTTPServer) ReceiveMetricFromBodyJSON(c echo.Context) error {
 	metric := new(pcstats.Metric)
-
-	buf := new(strings.Builder)
-	_, _ = io.Copy(buf, c.Request().Body)
-	// check errors
-	fmt.Println(buf.String())
 
 	if err := c.Bind(metric); err != nil {
 		return err

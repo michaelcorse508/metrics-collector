@@ -1,8 +1,10 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
@@ -39,6 +41,23 @@ func (s *HTTPServer) InitRoutes() {
 	s.server.Use(middleware.Gzip())
 	s.server.Use(s.HMACChecker)
 	s.server.Use(s.HMACSigner)
+	s.server.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if c.Request().Header.Get("Content-Type") != echo.MIMEApplicationJSON {
+				return next(c)
+			}
+
+			data, err := io.ReadAll(c.Request().Body)
+			if err != nil {
+				return err
+			}
+
+			c.Logger().Error(string(data))
+			c.Request().Body = io.NopCloser(bytes.NewReader(data))
+
+			return next(c)
+		}
+	})
 
 	s.server.RouteNotFound(
 		"/*",

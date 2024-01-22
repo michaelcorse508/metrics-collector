@@ -116,8 +116,6 @@ func (s *PostgresDB) GetMetric(
 		return nil, err
 	}
 
-	fmt.Println("===========>", metricFields.gotID)
-
 	metric, err := pcstats.NewMetric(
 		metricFields.gotID,
 		pcstats.MetricType(metricFields.gotType),
