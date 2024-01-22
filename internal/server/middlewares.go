@@ -65,6 +65,19 @@ func (s *HTTPServer) HMACChecker(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func (s *HTTPServer) LogHeaders(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		headers := "Headers: "
+		for key, value := range c.Request().Header {
+			headers += fmt.Sprintf("{%s:%s}", key, value)
+			headers += ", \n"
+		}
+		s.logger.Debug(headers)
+
+		return next(c)
+	}
+}
+
 func ReadRequestBody(c echo.Context) ([]byte, error) {
 	requestBody, err := io.ReadAll(c.Request().Body)
 	if err != nil {

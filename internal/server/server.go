@@ -39,7 +39,7 @@ func (s *HTTPServer) InitRoutes() {
 	s.server.Use(middleware.Gzip())
 	s.server.Use(s.HMACChecker)
 	s.server.Use(s.HMACSigner)
-
+	s.server.Use(s.LogHeaders)
 	s.server.RouteNotFound(
 		"/*",
 		func(c echo.Context) error { return c.NoContent(http.StatusNotFound) },
