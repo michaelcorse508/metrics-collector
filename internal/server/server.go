@@ -85,6 +85,7 @@ func RunServer() error {
 	logger := logging.NewZapLogger()
 
 	config := serverconfig.NewConfig()
+	fmt.Println("SECRET KEY SERVER ================>", config.GetSecretKey())
 
 	storage := ChooseStorage(ctx, config, logger)
 

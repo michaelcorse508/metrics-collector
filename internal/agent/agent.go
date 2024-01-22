@@ -190,6 +190,7 @@ func RunAgent() error {
 	metricCollector := collector.NewCollector(collector.NeededMetrics, config, logger)
 
 	agent, err := HTTPAgentNew(config, metricCollector, logger)
+	fmt.Println("AGENT SECRET KEY =============>", agent.config.GetSecretKey())
 	if err != nil {
 		logger.Error(errors.Wrap(err, "cannot create agent").Error())
 		return err
