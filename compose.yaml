@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: "postgres"
+    environment:
+      POSTGRES_DB: "MetricsCollectorDB" 
+      POSTGRES_USER: "computer" 
+      POSTGRES_PASSWORD: "computer"
+    ports:
+      - "5432:5432"

@@ -176,18 +176,17 @@ func (s *PostgresDB) selectRowByParams(
 	ctx context.Context,
 	metricID string,
 	metricType pcstats.MetricType,
-) (*SelectedMetricFields, error) {
-	selectedMetricValues := new(SelectedMetricFields)
+) (SelectedMetricFields, error) {
 
 	execCtx, cancelExec := context.WithTimeout(ctx, 5*time.Second)
 	defer cancelExec()
 
-	row := s.retriableQueryRow(execCtx, SelectRowQuery, metricID, metricType.String())
-
-	err := selectedMetricValues.UnmarshallRow(row)
-	if err != nil {
-		return nil, err
-	}
+	selectedMetricValues := s.retriableQueryRow(
+		execCtx,
+		SelectRowQuery,
+		metricID,
+		metricType.String(),
+	)
 
 	return selectedMetricValues, nil
 }
