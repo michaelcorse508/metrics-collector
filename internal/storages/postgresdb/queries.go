@@ -6,7 +6,7 @@ const CreateTableQuery = `create table metrics
     id      varchar(30) not null,
     mtype varchar(10) not null,
     value double precision,
-    delta int,
+    delta bigint,
     PRIMARY KEY (id, mtype)
 );
 
