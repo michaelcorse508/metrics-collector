@@ -1,9 +1,13 @@
 package server
 
 import (
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+
 	"github.com/bazookajoe1/metrics-collector/internal/pcstats"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 // ReceiveMetricFromURLParams is the handler responsible for receiving metrics from request uri.
@@ -30,7 +34,11 @@ func (s *HTTPServer) ReceiveMetricFromURLParams(c echo.Context) error {
 
 // SendMetricText is the handler responsible for sending metric value got from storage with parameters from uri.
 func (s *HTTPServer) SendMetricText(c echo.Context) error {
-	metric, err := s.storage.GetMetric(c.Request().Context(), c.Param("id"), pcstats.MetricType(c.Param("type")))
+	metric, err := s.storage.GetMetric(
+		c.Request().Context(),
+		c.Param("id"),
+		pcstats.MetricType(c.Param("type")),
+	)
 	if err != nil {
 		s.logger.Debug(err.Error())
 		return c.NoContent(http.StatusNotFound)
@@ -39,7 +47,9 @@ func (s *HTTPServer) SendMetricText(c echo.Context) error {
 	stringValue, err := metric.GetStringValue()
 	if err != nil {
 		s.logger.Debug(err.Error())
-		return c.NoContent(http.StatusInternalServerError) // this case should not occur, but who knows
+		return c.NoContent(
+			http.StatusInternalServerError,
+		) // this case should not occur, but who knows
 	}
 
 	return c.String(http.StatusOK, stringValue)
@@ -61,6 +71,11 @@ func (s *HTTPServer) SendAllMetricsHTML(c echo.Context) error {
 func (s *HTTPServer) ReceiveMetricFromBodyJSON(c echo.Context) error {
 	metric := new(pcstats.Metric)
 
+	buf := new(strings.Builder)
+	_, _ = io.Copy(buf, c.Request().Body)
+	// check errors
+	fmt.Println(buf.String())
+
 	if err := c.Bind(metric); err != nil {
 		return err
 	} // binding request body to pcstats.Metric
@@ -71,7 +86,11 @@ func (s *HTTPServer) ReceiveMetricFromBodyJSON(c echo.Context) error {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
-	responseMetric, err := s.storage.GetMetric(c.Request().Context(), metric.GetID(), metric.GetType())
+	responseMetric, err := s.storage.GetMetric(
+		c.Request().Context(),
+		metric.GetID(),
+		metric.GetType(),
+	)
 	if err != nil {
 		s.logger.Error(err.Error())
 		return c.NoContent(http.StatusInternalServerError)
@@ -95,7 +114,11 @@ func (s *HTTPServer) SendMetricJSON(c echo.Context) error {
 		return err
 	}
 
-	responseMetric, err := s.storage.GetMetric(c.Request().Context(), metric.GetID(), metric.GetType())
+	responseMetric, err := s.storage.GetMetric(
+		c.Request().Context(),
+		metric.GetID(),
+		metric.GetType(),
+	)
 	if err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
