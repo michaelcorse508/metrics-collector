@@ -40,8 +40,8 @@ func (s *HTTPServer) HMACChecker(next echo.HandlerFunc) echo.HandlerFunc {
 
 		sign, err := GetHMAC(c)
 		if err != nil {
-			s.logger.Debug("client has not set digital sign; abort request")
-			return c.NoContent(http.StatusBadRequest)
+			s.logger.Debug("client has not set digital sign; message will not be checked")
+			return next(c)
 		}
 
 		message, err := ReadRequestBody(c)
